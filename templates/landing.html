@@ -9,6 +9,7 @@
         <div class="col-lg-12 text-center">
             <form action="/users/save-question/" method="POST">
                 {% csrf_token %}
+                <h2 class="text-center">Hi, {{user.username }}</h2>
                 <h2 class="text-center m-3"> Post a question</h2>
                 <div class="form-group">
                         <textarea rows=5 cols=50 name="question"></textarea>
@@ -16,6 +17,11 @@
                 <div class="form-group">
                         <input type="submit" class="btn btn-primary" value="Post"/>
                 </div>
+            </form>
+
+            <form action="{% url 'view-all-answers-by-user' user.id %}" method="POST">
+                    {% csrf_token %}
+                <input type="submit" class="btn btn-primary" value="view all answers by me" />
             </form>
         </div>
     </div>

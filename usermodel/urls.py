@@ -17,9 +17,11 @@ from django.contrib import admin
 from django.urls import path, include , reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic import RedirectView
+from users import views
 
 urlpatterns = [
     # path('', RedirectView.as_view(url=reverse_lazy('landing')), name='landing'),
+    path('',views.view_all_questions),
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('users/', include('django.contrib.auth.urls')),
