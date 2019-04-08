@@ -19,13 +19,13 @@ class SignUp(generic.CreateView):
 def save_question(request):
     if request.method == 'POST':
         if request.POST['question'] == None or request.POST['question'] == "" or request.POST['question'] ==" ":
-            context = { 
+            context = {
                 "questions":Question.objects.all()
             }
             return HttpResponseRedirect(reverse('landing'), context)
-        question = Question(question_text=request.POST['question'],user =request.user)
+        question = Question(question_text=request.POST['question'], user=request.user)
         question.save()
-        context = { 
+        context = {
             "questions":Question.objects.all()
         }
         return HttpResponseRedirect(reverse('landing'), context)
@@ -36,8 +36,8 @@ def save_question(request):
 def view_all_questions(request):
     questions = Question.objects.all()
     template = 'landing.html'
-    context = { 
-        "questions":questions 
+    context = {
+        "questions": questions
     }
     return render(request, template, context)
 
@@ -47,11 +47,15 @@ def save_answer(request,question_id):
     if request.method == 'POST':
         print(request.POST['answer'])
         if request.POST['answer'] == None or request.POST['answer'] == "" or request.POST['answer'] == " ":
-            return HttpResponseRedirect(reverse('view-all-answers', kwargs={ "question_id":question_id }), get_answers_and_comments(question_id)) 
+            return HttpResponseRedirect(reverse('view-all-answers', kwargs={ "question_id":question_id }), get_answers_and_comments(question_id))
         question = Question.objects.get(id=question_id)
-        answer = Answer(answer_text = request.POST['answer'],user = request.user, question = question, up_vote_count=0,down_vote_count=0)
+        answer = Answer(
+            answer_text = request.POST['answer'],
+            user=request.user,
+            question = question
+        )
         answer.save()
-        return HttpResponseRedirect(reverse('view-all-answers', kwargs={ "question_id":question_id }), get_answers_and_comments(question_id)) 
+        return HttpResponseRedirect(reverse('view-all-answers', kwargs={ "question_id":question_id }), get_answers_and_comments(question_id))
     else:
         raise Http404
 
@@ -96,20 +100,10 @@ def get_answers_and_comments(question_id):
 def upvote(request,answer_id,user_id):
     template = 'view-all-answers.html'
     answer = Answer.objects.get(pk=answer_id)
-    user = CustomUser.objects.get(pk=user_id)
-    upvote = Upvote.objects.filter(answer = answer, user =user)
-    if len(upvote) > 0:
-        return render(request, template, get_answers_and_comments(answer.question.id))
-    else:
-        upvote = Upvote(user = user, answer = answer)
-        upvote.save()
-        downvote = Downvote.objects.filter(answer = answer ,user =user)
-        if len(downvote) > 0:
-            downvote[0].delete()
-            answer.down_vote_count -=1
-        answer.up_vote_count +=1
-        answer.save()
-        return render(request, template, get_answers_and_comments(answer.question.id))
+    user = request.user
+    answer.upvote(user)
+
+    return render(request, template, get_answers_and_comments(answer.question.id))
 
 
 @login_required
@@ -175,8 +169,8 @@ def view_all_answers_by_user(request,user_id):
     }
     template = "view-all-answers-by-user.html"
     return render(request, template, context)
-    
+
 
 def get_answers_for_user(user_id):
     return Answer.objects.filter(user=CustomUser.objects.get(pk=user_id))
-        
+
