@@ -1,62 +1,83 @@
-{% extends 'base.html' %}
-
-{% block title %}Landing{% endblock %}
-{% load i18n %}
-{% block content %}
-{% csrf_token %}
+{% extends 'base.html' %} {% block title %}Landing{% endblock %} {% load i18n %}
+{% block content %} {% csrf_token %}
 
 <h1 class="text-center m-3">{{ question.question_text }}</h1>
 <div class="row">
-    <div class="col-lg-12 text-center">
-        <ul style="list-style: none">
-            <li>
-                {% for ans in question_response %}
-                <div class =row>
-                    <div class="col-lg-12 text-center m-3">
-                            <h3>{{ans.answer.user.name}} -- {{ ans.answer.answer_text}} [Upvotes - {{ans.answer.up_vote_count}} , Downvotes - {{ans.answer.down_vote_count}}] </h3>
-                            <form method="POST" action="{% url 'upvote' ans.answer.id user.id %}">
-                                {% csrf_token %}
-                                <input type="submit" class="btn btn-secondary m-1" id="upVote" value="upvote"/>
-                            </form>
-                            <form method="POST" action="{% url 'downvote' ans.answer.id user.id %}">
-                                {% csrf_token %}
-                                <input type="submit" class="btn btn-secondary m-1" id="downVote" value="downvote"/>
-                            </form>
-                            <ul style="list-style: none">
-                                {% for comment in ans.comments %}
-                                <li><p>{{comment.user.name}} -- {{comment.comment_text}}</p></li>
-                                {% endfor %}
-                            </ul>
-                            {% if user.is_authenticated %}
-                            <form method="POST" action="{% url 'save-comment' ans.answer.id %}">
-                                    {% csrf_token %}
-                                <div class="form-group">
-                                    <input type="text" name="comment" placeholder="post a comment" />
-                                    <input class="btn btn-primary" type="submit" value="comment"/>
-                                </div>
-                            </form>
-                            {% endif %}
-                    </div>
-                </div>
-                {% endfor%}
-            </li>
-        </ul>
-    </div>
+  <div class="col-lg-12 text-center">
+    <ul style="list-style: none">
+      <li>
+        {% for ans in question_response %}
+        <div class="row">
+          <div class="col-lg-12 text-center m-3">
+            <h3>
+              {{ ans.answer.user.name }} --
+              {{ ans.answer.answer_text }} [Upvotes -
+              {{ ans.answer.upvote_cnt }} , Downvotes -
+              {{ ans.answer.downvote_cnt }}]
+            </h3>
+            <form method="POST" action="{% url 'upvote' ans.answer.id %}">
+              {% csrf_token %}
+              <input
+                type="submit"
+                class="btn btn-secondary m-1"
+                id="upVote"
+                value="upvote"
+              />
+            </form>
+            <form method="POST" action="{% url 'downvote' ans.answer.id %}">
+              {% csrf_token %}
+              <input
+                type="submit"
+                class="btn btn-secondary m-1"
+                id="downVote"
+                value="downvote"
+              />
+            </form>
+            <ul style="list-style: none">
+              {% for comment in ans.comments %}
+              <li>
+                <p>{{ comment.user.name }} -- {{ comment.comment_text }}</p>
+              </li>
+              {% endfor %}
+            </ul>
+            {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'save-comment' ans.answer.id %}">
+              {% csrf_token %}
+              <div class="form-group">
+                <input
+                  type="text"
+                  name="comment"
+                  placeholder="post a comment"
+                />
+                <input class="btn btn-primary" type="submit" value="comment" />
+              </div>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor%}
+      </li>
+    </ul>
+  </div>
 </div>
 {% if user.is_authenticated %}
-    <div class="row m-3">
-        <div class="col-lg-12 text-center">
-            <h3 class="mb-5">Post an Answer</h3>
-            <form action="{% url 'save-answer' question.id %}" method="POST">
-                {% csrf_token %}
-                <div class="form-group">
-                        <textarea rows=5 cols=50 name="answer" placeholder="Enter your answer here"></textarea>
-                </div>
-                <div class="form-group">
-                        <input type="submit" value="submit answer" class="btn btn-primary"/>
-                </div>
-            </form>
-        </div>  
-    </div>
-{% endif %}
-{% endblock %}
+<div class="row m-3">
+  <div class="col-lg-12 text-center">
+    <h3 class="mb-5">Post an Answer</h3>
+    <form action="{% url 'save-answer' question.id %}" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <textarea
+          rows="5"
+          cols="50"
+          name="answer"
+          placeholder="Enter your answer here"
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <input type="submit" value="submit answer" class="btn btn-primary" />
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %} {% endblock %}
