@@ -12,25 +12,19 @@ def customuser():
 
 @pytest.fixture
 def question(customuser):
-    question = Question(user=customuser, question_text="New Question1")
-    question.save()
+    Question.save_question(customuser, "New Question1")
     return Question.objects.filter(question_text="New Question1").first()
 
 
 @pytest.fixture
 def answer(customuser,question):
-    answer = Answer(user=customuser, answer_text="New Answer1", question=question)
-    answer.save()
+    Answer.save_answer("New Answer1", customuser, question.id)
     return Answer.objects.filter(answer_text="New Answer1").first()
 
 @pytest.fixture
 def comment(customuser,answer):
-    comment = Comment(user=customuser, comment_text="New Comment1", answer=answer)
-    comment.save()
+    comment = Comment.save_comment("New Comment1", customuser, answer)
     return Comment.objects.filter(comment_text="New Comment1").first()
-
-def test_save(customuser):
-    assert customuser.username == "rajesh_sharma"
 
 def test_save_answer_for_a_question(customuser, answer):
     assert answer.answer_text == "New Answer1"

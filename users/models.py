@@ -51,7 +51,7 @@ class Answer(models.Model):
         return Vote.objects.filter(answer=self, v_type=VoteType.DOWNVOTE.value).count()
 
     @staticmethod
-    def save_answer(self, answer_text, user, question_id):
+    def save_answer(answer_text, user, question_id):
         answer = Answer(
             answer_text=answer_text, user=user, question=Question.objects.get(pk=question_id))
         answer.save()
@@ -98,7 +98,7 @@ class Comment(models.Model):
     date = models.DateField(blank=True, default=datetime.now)
 
     @staticmethod
-    def save_comment(self, comment_text, user, answer):
+    def save_comment(comment_text, user, answer):
         comment = Comment(comment_text=comment_text, answer=answer, user=user)
         comment.save()
 
