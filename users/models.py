@@ -11,7 +11,7 @@ class VoteType(Enum):
 
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255, null=False, unique=True)
     name = models.CharField(max_length=200, default="")
     dob = models.DateField(blank=True, null=True, default=datetime.now)
     is_admin = models.BooleanField(default=False, blank=True)
@@ -26,18 +26,12 @@ class CustomUser(AbstractUser):
 
 
 class Question(models.Model):
-    question_text = models.CharField(null=False, max_length=500)
+    question_text = models.CharField(null=False, max_length=500, unique=True, blank=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     date = models.DateField(blank=True, default=datetime.now)
 
-    @staticmethod
-    def save_question(user, question_text):
-        question = Question(user=user, question_text=question_text)
-        question.save()
-
-
 class Answer(models.Model):
-    answer_text = models.CharField(null=False, max_length=10000)
+    answer_text = models.CharField(null=False, max_length=10000, unique=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     date = models.DateField(blank=True, default=datetime.now)
@@ -49,12 +43,6 @@ class Answer(models.Model):
     @property
     def downvote_cnt(self):
         return Vote.objects.filter(answer=self, v_type=VoteType.DOWNVOTE.value).count()
-
-    @staticmethod
-    def save_answer(answer_text, user, question_id):
-        answer = Answer(
-            answer_text=answer_text, user=user, question=Question.objects.get(pk=question_id))
-        answer.save()
 
     def upvoted_by_user(self, user):
         upvote = Vote.objects.filter(
@@ -92,15 +80,10 @@ class Answer(models.Model):
 
 
 class Comment(models.Model):
-    comment_text = models.CharField(null=False, max_length=5000)
+    comment_text = models.CharField(null=False, max_length=5000, unique=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
     date = models.DateField(blank=True, default=datetime.now)
-
-    @staticmethod
-    def save_comment(comment_text, user, answer):
-        comment = Comment(comment_text=comment_text, answer=answer, user=user)
-        comment.save()
 
 
 class Vote(models.Model):

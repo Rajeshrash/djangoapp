@@ -25,7 +25,7 @@ def save_question(request):
                 "questions": Question.objects.all()
             }
             return HttpResponseRedirect(reverse('landing'), context)
-        Question.save_question(request.user, request.POST['question'])
+        Question.objects.create(request.user, request.POST['question'])
         context = {
             "questions": Question.objects.all()
         }
@@ -49,7 +49,7 @@ def save_answer(request, question_id):
         print(request.POST['answer'])
         if request.POST['answer'] == None or request.POST['answer'] == "" or request.POST['answer'] == " ":
             return HttpResponseRedirect(reverse('view-all-answers', kwargs={"question_id": question_id}), get_answers_and_comments(question_id))
-        Answer.save_answer(
+        Answer.objects.create(
             answer_text=request.POST['answer'],
             user=request.user,
             question_id=question_id
@@ -65,7 +65,7 @@ def save_comment(request, answer_id):
         answer = Answer.objects.get(id=answer_id)
         if request.POST['comment'] == None or request.POST['comment'] == "" or request.POST['comment'] == " ":
             return HttpResponseRedirect(reverse('view-all-answers', kwargs={"question_id": answer.question.id}), get_answers_and_comments(answer.question_id))
-        Comment.save_comment(
+        Comment.objects.create(
             comment_text=request.POST['comment'], answer=answer, user=request.user)
         return HttpResponseRedirect(reverse('view-all-answers', kwargs={"question_id": answer.question.id}), get_answers_and_comments(answer.question_id))
     else:
@@ -77,9 +77,8 @@ def view_all_answers(request, question_id):
     template = 'view-all-answers.html'
     return render(request, template, get_answers_and_comments(question_id))
 
-
+# need to implement this and refactor this solving the n+1 query problem
 def get_answers_and_comments(question_id):
-    # refactor this solving the n+1 query problem
     pass
     # answers = Answer.objects.filter(
     #     question=Question.objects.get(id=question_id))
