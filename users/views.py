@@ -25,7 +25,7 @@ def save_question(request):
                 "questions": Question.objects.all()
             }
             return HttpResponseRedirect(reverse('landing'), context)
-        Question.objects.create(request.user, request.POST['question'])
+        Question.objects.create(user = request.user, question_text = request.POST['question'])
         context = {
             "questions": Question.objects.all()
         }
@@ -72,34 +72,27 @@ def save_comment(request, answer_id):
         raise Http404
 
 
-@login_required
+def get_answers_and_comments(question_id):
+    question = Question.objects.get(pk=question_id)
+    answers = Answer.objects.filter(question = question).prefetch_related('comment_set').all()
+    ans_comments = [{"answer":ans,"comments":ans.comment_set.all()} for ans in answers]
+    context = {
+        "question_response":ans_comments,
+        "question":question
+    }
+    return context
+
+
+
 def view_all_answers(request, question_id):
     template = 'view-all-answers.html'
-    return render(request, template, get_answers_and_comments(question_id))
-
-# need to implement this and refactor this solving the n+1 query problem
-def get_answers_and_comments(question_id):
-    pass
-    # answers = Answer.objects.filter(
-    #     question=Question.objects.get(id=question_id))
-    # ans_comments = []
-    # for ans in answers:
-    #     comments = Comment.objects.filter(answer=ans)
-    #     question_response = {
-    #         "answer": ans,
-    #         "comments": comments
-    #     }
-    #     ans_comments.append(question_response)
-    # context = {
-    #     "question_response": ans_comments,
-    #     "question": Question.objects.get(id=question_id)
-    # }
-    # return context
+    context = get_answers_and_comments(question_id)
+    return render(request, template, context)
 
 
 @login_required
 def upvote(request, answer_id):
-    template = 'view-all-answers.html'
+    template = 'view-all-answers.html/'
     answer = Answer.objects.get(pk=answer_id)
     answer.upvote(request.user)
     return render(request, template, get_answers_and_comments(answer.question.id))

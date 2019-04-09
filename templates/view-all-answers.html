@@ -12,7 +12,7 @@
             <h3>
               {{ ans.answer.user.name }} --
               {{ ans.answer.answer_text }} [Upvotes -
-              {{ ans.answer.upvote_cnt }} , Downvotes -
+              {{ ans.answer.upvote_cnt }} ], [Downvotes -
               {{ ans.answer.downvote_cnt }}]
             </h3>
             <form method="POST" action="{% url 'upvote' ans.answer.id %}">

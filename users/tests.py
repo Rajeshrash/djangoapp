@@ -1,13 +1,14 @@
-import pytest
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+import pytest
 
 from .models import Question, Answer, Vote, Comment, CustomUser
 
+
 pytestmark = pytest.mark.django_db
 
-
 # Fixtures
+
 @pytest.fixture
 def customuser():
     custom_user = CustomUser(email="rd@gmail.com",username="rajesh_sharma",password="bcdev123")
